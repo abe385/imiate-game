@@ -174,10 +174,20 @@
   let currentRound = 1;
   let todayWord, todayVec, rankOf, totalWords;
 
+  let round1WordCache = null;
+
   function loadRound(roundNum){
     currentRound = roundNum;
     const order = roundNum === 1 ? ANSWER_ORDER_1 : ANSWER_ORDER_2;
-    todayWord = order[todayIndex()];
+    let idx = todayIndex();
+    let word = order[idx];
+    // Extremely rare edge case: if round 2's word happens to match round 1's
+    // word for today, shift to the next word in round 2's order instead.
+    if(roundNum === 2 && word === round1WordCache){
+      word = order[(idx + 1) % order.length];
+    }
+    if(roundNum === 1) round1WordCache = word;
+    todayWord = word;
     todayVec = WORD_VECTORS[todayWord];
     // Precompute every vocabulary word's similarity to this round's answer,
     // once, so looking up any guess's rank afterward is an instant lookup.
