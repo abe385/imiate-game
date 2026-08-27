@@ -1,5 +1,6 @@
 ﻿$path = "C:\word-chain-worker\imiate-game\imiate.html"
-$backup = "C:\word-chain-worker\imiate-game\imiate.html.backup12"
+$timestamp = Get-Date -Format "yyyyMMdd_HHmmss"
+$backup = "C:\word-chain-worker\imiate-game\imiate.html.backup_$timestamp"
 
 if (-not (Test-Path $path)) {
     Write-Host "エラー: imiate.html が見つかりません: $path" -ForegroundColor Red
@@ -23,13 +24,15 @@ function ReplaceOnce($content, $find, $replaceWith, $label) {
 
 # ---- ① 「パスワードを忘れた方はこちら」リンクを追加 ----
 $find1 = @'
-    <div class="switchText" id="switchTextWrap" style="display:none;">
-      <button class="linkBtn" id="authSwitchBtn">新規登録する</button>
+    <div class="switchText">
+      すでにアカウントをお持ちですか?
+      <button class="linkBtn" id="authSwitchBtn">ログインする</button>
     </div>
 '@
 $replace1 = @'
-    <div class="switchText" id="switchTextWrap" style="display:none;">
-      <button class="linkBtn" id="authSwitchBtn">新規登録する</button>
+    <div class="switchText">
+      すでにアカウントをお持ちですか?
+      <button class="linkBtn" id="authSwitchBtn">ログインする</button>
     </div>
     <div style="text-align:center; margin-top:10px; display:none;" id="forgotPasswordWrap">
       <button class="linkBtn" id="forgotPasswordLink">パスワードを忘れた方はこちら</button>
@@ -92,19 +95,31 @@ $replace3 = @'
 $result = ReplaceOnce $content $find3 $replace3 "③ els への追加"
 if ($result) { $content = $result }
 
-# ---- ④ setAuthMode() で、ログインモード時だけ「パスワードを忘れた方」リンクを表示 ----
+# ---- ④ toggleAuthMode() で、ログインモード時だけ「パスワードを忘れた方」リンクを表示 ----
 $find4 = @'
-    document.getElementById('tabSignup').classList.toggle('activeTab', isSignupMode);
-    document.getElementById('tabLogin').classList.toggle('activeTab', !isSignupMode);
+  function toggleAuthMode(){
+    isSignupMode = !isSignupMode;
+    document.getElementById('authTitle').textContent = isSignupMode ? 'はじめまして' : 'おかえりなさい';
+    els.authSubmitBtn.textContent = isSignupMode ? '無料で始める' : 'ログイン';
+    els.authSwitchBtn.textContent = isSignupMode ? 'ログインする' : '新規登録する';
+    els.authError.textContent = '';
+    els.authPasswordConfirm.style.display = isSignupMode ? 'block' : 'none';
+    els.authPasswordConfirm.value = '';
   }
 '@
 $replace4 = @'
-    document.getElementById('tabSignup').classList.toggle('activeTab', isSignupMode);
-    document.getElementById('tabLogin').classList.toggle('activeTab', !isSignupMode);
+  function toggleAuthMode(){
+    isSignupMode = !isSignupMode;
+    document.getElementById('authTitle').textContent = isSignupMode ? 'はじめまして' : 'おかえりなさい';
+    els.authSubmitBtn.textContent = isSignupMode ? '無料で始める' : 'ログイン';
+    els.authSwitchBtn.textContent = isSignupMode ? 'ログインする' : '新規登録する';
+    els.authError.textContent = '';
+    els.authPasswordConfirm.style.display = isSignupMode ? 'block' : 'none';
+    els.authPasswordConfirm.value = '';
     els.forgotPasswordWrap.style.display = isSignupMode ? 'none' : 'block';
   }
 '@
-$result = ReplaceOnce $content $find4 $replace4 "④ setAuthMode の修正"
+$result = ReplaceOnce $content $find4 $replace4 "④ toggleAuthMode の修正"
 if ($result) { $content = $result }
 
 # ---- ⑤ パスワード再設定用の関数を追加(startCheckout関数の直前に挿入)----
@@ -195,7 +210,7 @@ if(!checkResetTokenInUrl()){
 $result = ReplaceOnce $content $find6 $replace6 "⑥ 初期化処理の修正"
 if ($result) { $content = $result }
 
-# ---- ⑦ イベント登録を追加(</script>の直前)----
+# ---- ⑦ イベント登録を追加(</script>の直前、未追加の場合のみ)----
 $eventCode = @'
 
   els.forgotPasswordLink.addEventListener('click', openForgotPassword);
@@ -203,12 +218,16 @@ $eventCode = @'
   els.forgotSubmitBtn.addEventListener('click', handleForgotSubmit);
   els.resetSubmitBtn.addEventListener('click', handleResetSubmit);
 '@
-$lastScriptIdx = $content.LastIndexOf('</script>')
-if ($lastScriptIdx -lt 0) {
-    Write-Host "エラー: </script> タグが見つかりませんでした" -ForegroundColor Red
+if ($content.Contains("els.resetSubmitBtn.addEventListener")) {
+    Write-Host "⑦ イベント登録: すでに追加済みのためスキップ" -ForegroundColor Yellow
 } else {
-    $content = $content.Substring(0, $lastScriptIdx) + $eventCode + "`n" + $content.Substring($lastScriptIdx)
-    Write-Host "⑦ イベント登録の追加 : OK" -ForegroundColor Green
+    $lastScriptIdx = $content.LastIndexOf('</script>')
+    if ($lastScriptIdx -lt 0) {
+        Write-Host "エラー: </script> タグが見つかりませんでした" -ForegroundColor Red
+    } else {
+        $content = $content.Substring(0, $lastScriptIdx) + $eventCode + "`n" + $content.Substring($lastScriptIdx)
+        Write-Host "⑦ イベント登録の追加 : OK" -ForegroundColor Green
+    }
 }
 
 Set-Content -Path $path -Value $content -Encoding UTF8 -NoNewline
