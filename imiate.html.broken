@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+﻿<!DOCTYPE html>
 <html lang="ja">
 <head>
 <meta charset="UTF-8">
@@ -612,6 +612,11 @@
   // 初期化: ログイン状態を確認してから、ゲーム画面 or ログイン画面 or 課金画面を出す
   setAuthMode('signup');
   refreshAccountStatus();
+
+  els.forgotPasswordLink.addEventListener('click', openForgotPassword);
+  els.forgotBackBtn.addEventListener('click', closeForgotPassword);
+  els.forgotSubmitBtn.addEventListener('click', handleForgotSubmit);
+  els.resetSubmitBtn.addEventListener('click', handleResetSubmit);
 </script>
 </body>
 </html>
