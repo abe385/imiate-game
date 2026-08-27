@@ -4,11 +4,6 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
 <title>脳トレ(連想ゲーム)</title>
-<link rel="manifest" href="manifest.json">
-<link rel="apple-touch-icon" href="icon-192.png">
-<meta name="theme-color" content="#1a1d2e">
-<meta name="apple-mobile-web-app-capable" content="yes">
-<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Zen+Kaku+Gothic+New:wght@400;500;700;900&family=Shippori+Mincho:wght@600;800&display=swap" rel="stylesheet">
 <style>
@@ -130,21 +125,6 @@
   <h1>🧠 脳トレ(連想ゲーム)</h1>
   <div class="sub">今日のお題の単語を、意味の近さのヒントを頼りに当てよう</div>
 <div class="accountBar" id="accountBar"></div>
-<div style="text-align:center; margin-top:8px;">
-  <button id="installBtn" class="linkBtn" style="display:none; color:#ffe08a; font-size:15px; font-weight:800;">📲 ホーム画面に追加してアプリのように使う</button>
-</div>
-
-<div class="modalOverlay" id="installIosOverlay">
-  <div class="modalBox">
-    <h2>📲 ホーム画面に追加</h2>
-    <p style="text-align:left; line-height:2;">
-      1. 画面下(または上)の <b>共有ボタン</b>(四角から矢印が出ているアイコン)をタップ<br>
-      2. メニューの中から <b>「ホーム画面に追加」</b> を選択<br>
-      3. 右上の <b>「追加」</b> をタップすれば完了です
-    </p>
-    <button class="primaryBtn" id="installIosCloseBtn">閉じる</button>
-  </div>
-</div>
 
 <div class="modalOverlay" id="loginOverlay">
   <div class="modalBox">
@@ -512,9 +492,6 @@ const els = {
     ageConfirmCheckbox: document.getElementById('ageConfirmCheckbox'),
     paywallError: document.getElementById('paywallError'),
     paywallCloseBtn: document.getElementById('paywallCloseBtn'),
-    installBtn: document.getElementById('installBtn'),
-    installIosOverlay: document.getElementById('installIosOverlay'),
-    installIosCloseBtn: document.getElementById('installIosCloseBtn'),
   };
 
   function rankClass(rank){
@@ -670,49 +647,6 @@ const els = {
   document.getElementById('paywallLogoutBtn').addEventListener('click', logout);
   els.paywallCloseBtn.addEventListener('click', () => showPaywall(false));
   refreshAuthStatus().then(checkBillingReturn);
-
-  // ==================== PWA「ホーム画面に追加」機能 ====================
-  let deferredInstallPrompt = null;
-  const isIos = /iphone|ipad|ipod/i.test(navigator.userAgent);
-
-  window.addEventListener('beforeinstallprompt', (e) => {
-    e.preventDefault();
-    deferredInstallPrompt = e;
-    els.installBtn.style.display = 'inline-block';
-  });
-
-  if (isIos) {
-    // iOSはbeforeinstallpromptに対応していないため、常にボタンを表示し
-    // タップ時に手順の説明を表示する。
-    els.installBtn.style.display = 'inline-block';
-  }
-
-  els.installBtn.addEventListener('click', async () => {
-    if (isIos) {
-      els.installIosOverlay.style.display = 'flex';
-      return;
-    }
-    if (deferredInstallPrompt) {
-      deferredInstallPrompt.prompt();
-      await deferredInstallPrompt.userChoice;
-      deferredInstallPrompt = null;
-      els.installBtn.style.display = 'none';
-    }
-  });
-
-  els.installIosCloseBtn.addEventListener('click', () => {
-    els.installIosOverlay.style.display = 'none';
-  });
-
-  window.addEventListener('appinstalled', () => {
-    els.installBtn.style.display = 'none';
-  });
-
-  if ('serviceWorker' in navigator) {
-    navigator.serviceWorker.register('service-worker.js').catch(() => {
-      // 登録に失敗してもゲーム自体には影響しない
-    });
-  }
 </script>
 </body>
 </html>
