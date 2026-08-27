@@ -70,7 +70,7 @@
     gap:8px; justify-content:center; flex-wrap:wrap;
   }
   .linkBtn{
-    background:none; border:none; color:#c99a1f; font-size:15px; font-weight:700;
+    background:none; border:none; color:var(--gold); font-size:12px;
     text-decoration:underline; cursor:pointer; padding:0; font-family:inherit;
   }
   .modalOverlay{
@@ -82,21 +82,20 @@
     padding:28px 22px; max-width:320px; width:100%; text-align:center;
   }
   .modalBox h2{
-    font-family:'Shippori Mincho', serif; font-size:28px; margin:0 0 10px;
+    font-family:'Shippori Mincho', serif; font-size:20px; margin:0 0 6px;
   }
-  .modalBox p{ font-size:17px; color:#3a3628; margin:0 0 20px; line-height:1.8; font-weight:500; }
+  .modalBox p{ font-size:13px; color:#5a5647; margin:0 0 18px; line-height:1.6; }
   .modalBox input{
-    width:100%; padding:16px; border-radius:12px; border:2px solid var(--paper-dim);
-    font-size:19px; margin-bottom:14px; background:#fff;
+    width:100%; padding:12px; border-radius:10px; border:1.5px solid var(--paper-dim);
+    font-size:15px; margin-bottom:10px; background:#fff;
   }
-  .modalBox input::placeholder{ font-size:16px; }
   .modalBox .primaryBtn{
-    width:100%; background:var(--accent); color:#fff; border:none; border-radius:12px;
-    padding:18px; font-size:19px; font-weight:900; cursor:pointer; margin-bottom:14px;
+    width:100%; background:var(--accent); color:#fff; border:none; border-radius:10px;
+    padding:13px; font-size:15px; font-weight:700; cursor:pointer; margin-bottom:10px;
   }
   .modalBox .primaryBtn:active{ background:var(--accent-dark); }
-  .modalBox .switchText{ font-size:15px; color:#3a3628; line-height:1.8; }
-  .modalBox .authError{ color:var(--danger); font-size:15px; font-weight:700; min-height:20px; margin-bottom:10px; }
+  .modalBox .switchText{ font-size:13px; color:#5a5647; }
+  .modalBox .authError{ color:var(--danger); font-size:13px; min-height:18px; margin-bottom:8px; }
   .paywallOverlay{
     display:none; position:fixed; inset:0; background:rgba(26,29,46,0.92);
     z-index:900; align-items:center; justify-content:center; padding:20px;
