@@ -72,18 +72,8 @@
   /* ==================== ログイン・課金UI ==================== */
   .accountBar{
     font-size:16px; color:#eef1fb; margin-top:12px; display:flex;
-    flex-direction:column; gap:10px; justify-content:center; align-items:center;
-    padding:14px 12px; background:rgba(255,255,255,0.08); border-radius:12px;
-  }
-  .upgradeBigBtn{
-    background:var(--gold); color:#2b2b22; font-weight:900; font-size:18px;
-    border:none; border-radius:14px; padding:14px 32px; cursor:pointer;
-    box-shadow:0 4px 14px rgba(224,184,74,0.4);
-  }
-  .upgradeBigBtn:active{ transform:scale(0.97); }
-  .smallLogout{
-    font-size:13px; color:#aab2cc; font-weight:500; background:none; border:none;
-    text-decoration:underline; cursor:pointer; font-family:inherit;
+    gap:10px; justify-content:center; flex-wrap:wrap; align-items:center;
+    padding:8px 12px; background:rgba(255,255,255,0.08); border-radius:10px;
   }
   .linkBtn{
     background:none; border:none; color:#c99a1f; font-size:15px; font-weight:700;
@@ -100,17 +90,6 @@
   .modalBox{
     background:var(--paper); color:var(--ink); border-radius:16px;
     padding:28px 22px; max-width:320px; width:100%; text-align:center;
-  }
-  .authTabs{
-    display:flex; gap:8px; margin-bottom:18px; background:var(--paper-dim);
-    border-radius:12px; padding:4px;
-  }
-  .authTabs button{
-    flex:1; padding:12px 8px; border:none; border-radius:9px; font-size:16px;
-    font-weight:700; cursor:pointer; background:none; color:#5a5647; font-family:inherit;
-  }
-  .authTabs button.activeTab{
-    background:var(--accent); color:#fff;
   }
   .modalBox h2{
     font-family:'Shippori Mincho', serif; font-size:28px; margin:0 0 10px;
@@ -169,45 +148,17 @@
 
 <div class="modalOverlay" id="loginOverlay">
   <div class="modalBox">
-    <div class="authTabs">
-      <button id="tabSignup" class="activeTab">🆕 はじめての方</button>
-      <button id="tabLogin">🔑 2回目以降の方(ログイン)</button>
-    </div>
     <h2 id="authTitle">はじめまして</h2>
-    <p id="authDesc">メールアドレスと、お好きなパスワード(8文字以上)を決めるだけで始められます。メール認証は不要です。<br>登録すると7日間無料でお試しいただけます。</p>
+    <p>メールアドレスと、お好きなパスワード(8文字以上)を決めるだけで始められます。メール認証は不要です。<br>登録すると7日間無料でお試しいただけます。</p>
     <div class="authError" id="authError"></div>
     <input type="email" id="authEmail" placeholder="メールアドレス" autocomplete="email">
     <input type="password" id="authPassword" placeholder="パスワード(8文字以上)" autocomplete="new-password">
     <input type="password" id="authPasswordConfirm" placeholder="パスワード(確認用・もう一度入力)" autocomplete="new-password">
     <button class="primaryBtn" id="authSubmitBtn">無料で始める</button>
-    <div class="switchText" id="switchTextWrap" style="display:none;">
-      <button class="linkBtn" id="authSwitchBtn">新規登録する</button>
+    <div class="switchText">
+      すでにアカウントをお持ちですか?
+      <button class="linkBtn" id="authSwitchBtn">ログインする</button>
     </div>
-    <div style="text-align:center; margin-top:10px; display:none;" id="forgotPasswordWrap">
-      <button class="linkBtn" id="forgotPasswordLink">パスワードを忘れた方はこちら</button>
-    </div>
-  </div>
-</div>
-
-<div class="modalOverlay" id="forgotOverlay">
-  <div class="modalBox">
-    <h2>🔑 パスワード再設定</h2>
-    <p>登録済みのメールアドレスを入力してください。再設定用のリンクをメールでお送りします。</p>
-    <div class="authError" id="forgotError"></div>
-    <input type="email" id="forgotEmail" placeholder="メールアドレス" autocomplete="email">
-    <button class="primaryBtn" id="forgotSubmitBtn">再設定メールを送る</button>
-    <button class="linkBtn" id="forgotBackBtn">ログイン画面に戻る</button>
-  </div>
-</div>
-
-<div class="modalOverlay" id="resetOverlay">
-  <div class="modalBox">
-    <h2>🔑 新しいパスワードを設定</h2>
-    <p>新しいパスワード(8文字以上)を入力してください。</p>
-    <div class="authError" id="resetError"></div>
-    <input type="password" id="resetPassword" placeholder="新しいパスワード(8文字以上)" autocomplete="new-password">
-    <input type="password" id="resetPasswordConfirm" placeholder="新しいパスワード(確認用)" autocomplete="new-password">
-    <button class="primaryBtn" id="resetSubmitBtn">パスワードを更新する</button>
   </div>
 </div>
 
@@ -402,19 +353,16 @@
 
   function updateAccountBar(){
     if(!authStatus){ els.accountBar.innerHTML = ''; return; }
-    let html = '';
+    let label = '';
     if(authStatus.status === 'trial'){
-      html = `<div>🎁 無料期間中(残り${daysLeft(authStatus.trialEndsAt)}日)</div>
-        <button id="upgradeBtn" class="upgradeBigBtn">🚀 アップグレードする</button>`;
+      label = `🎁 無料期間中(残り${daysLeft(authStatus.trialEndsAt)}日) ・ <button id="upgradeBtn" class="linkBtn">アップグレード</button>`;
     } else if(authStatus.status === 'active'){
-      html = `<div>✅ 有料会員</div>
-        <button id="portalBtn" class="upgradeBigBtn">契約管理</button>`;
+      label = `✅ 有料会員 ・ <button id="portalBtn" class="linkBtn">契約管理</button>`;
     } else {
-      html = `<div>⏰ 無料期間が終了しました</div>
-        <button id="upgradeBtn" class="upgradeBigBtn">🚀 アップグレードする</button>`;
+      label = `⏰ 無料期間が終了しました ・ <button id="upgradeBtn" class="linkBtn">アップグレード</button>`;
     }
-    html += `<button id="logoutBtn" class="smallLogout">ログアウト</button>`;
-    els.accountBar.innerHTML = html;
+    label += ` ・ <button id="logoutBtn" class="linkBtn">ログアウト</button>`;
+    els.accountBar.innerHTML = label;
     const up = document.getElementById('upgradeBtn'); if(up) up.addEventListener('click', openUpgradeFlow);
     const pt = document.getElementById('portalBtn'); if(pt) pt.addEventListener('click', openPortal);
     const lo = document.getElementById('logoutBtn'); if(lo) lo.addEventListener('click', logout);
@@ -471,22 +419,14 @@
     }
   }
 
-  function setAuthMode(signup){
-    isSignupMode = signup;
+  function toggleAuthMode(){
+    isSignupMode = !isSignupMode;
     document.getElementById('authTitle').textContent = isSignupMode ? 'はじめまして' : 'おかえりなさい';
-    document.getElementById('authDesc').textContent = isSignupMode
-      ? 'メールアドレスと、お好きなパスワード(8文字以上)を決めるだけで始められます。メール認証は不要です。登録すると7日間無料でお試しいただけます。'
-      : '登録済みのメールアドレスとパスワードでログインしてください。';
     els.authSubmitBtn.textContent = isSignupMode ? '無料で始める' : 'ログイン';
+    els.authSwitchBtn.textContent = isSignupMode ? 'ログインする' : '新規登録する';
     els.authError.textContent = '';
     els.authPasswordConfirm.style.display = isSignupMode ? 'block' : 'none';
     els.authPasswordConfirm.value = '';
-    document.getElementById('tabSignup').classList.toggle('activeTab', isSignupMode);
-    document.getElementById('tabLogin').classList.toggle('activeTab', !isSignupMode);
-    els.forgotPasswordWrap.style.display = isSignupMode ? 'none' : 'block';
-  }
-  function toggleAuthMode(){
-    setAuthMode(!isSignupMode);
   }
 
   async function logout(){
@@ -497,74 +437,6 @@
     updateAccountBar();
     showPaywall(false);
     showLoginModal();
-  }
-
-  let resetTokenValue = null;
-
-  function openForgotPassword(){
-    els.loginOverlay.style.display = 'none';
-    els.forgotOverlay.style.display = 'flex';
-    els.forgotError.textContent = '';
-    els.forgotError.style.color = '';
-    els.forgotEmail.value = els.authEmail.value || '';
-  }
-
-  function closeForgotPassword(){
-    els.forgotOverlay.style.display = 'none';
-    els.loginOverlay.style.display = 'flex';
-  }
-
-  async function handleForgotSubmit(){
-    const email = els.forgotEmail.value.trim();
-    els.forgotError.style.color = '';
-    els.forgotError.textContent = '';
-    if(!email){
-      els.forgotError.textContent = 'メールアドレスを入力してください';
-      return;
-    }
-    try{
-      await apiFetch('/auth/request-reset', { method: 'POST', body: JSON.stringify({ email }) });
-      els.forgotError.style.color = 'var(--good)';
-      els.forgotError.textContent = '再設定用のメールを送信しました(登録されている場合)。メールをご確認ください。';
-    } catch(e){
-      els.forgotError.textContent = e.message;
-    }
-  }
-
-  function checkResetTokenInUrl(){
-    const params = new URLSearchParams(window.location.search);
-    const token = params.get('reset_token');
-    if(token){
-      resetTokenValue = token;
-      els.loginOverlay.style.display = 'none';
-      els.resetOverlay.style.display = 'flex';
-      return true;
-    }
-    return false;
-  }
-
-  async function handleResetSubmit(){
-    const password = els.resetPassword.value;
-    const confirmPw = els.resetPasswordConfirm.value;
-    els.resetError.textContent = '';
-    if(password.length < 8){
-      els.resetError.textContent = 'パスワードは8文字以上にしてください';
-      return;
-    }
-    if(password !== confirmPw){
-      els.resetError.textContent = 'パスワードが一致しません';
-      return;
-    }
-    try{
-      await apiFetch('/auth/reset-password', { method: 'POST', body: JSON.stringify({ token: resetTokenValue, password }) });
-      els.resetOverlay.style.display = 'none';
-      history.replaceState(null, '', window.location.pathname);
-      setAuthMode(false);
-      showLoginModal();
-      alert('パスワードを再設定しました。新しいパスワードでログインしてください。');
-    } catch(e){
-      els.resetError.textContent = e.message;
-    }
   }
 
   function openUpgradeFlow(){
@@ -643,18 +515,6 @@ const els = {
     installBtn: document.getElementById('installBtn'),
     installIosOverlay: document.getElementById('installIosOverlay'),
     installIosCloseBtn: document.getElementById('installIosCloseBtn'),
-    forgotPasswordWrap: document.getElementById('forgotPasswordWrap'),
-    forgotPasswordLink: document.getElementById('forgotPasswordLink'),
-    forgotOverlay: document.getElementById('forgotOverlay'),
-    forgotEmail: document.getElementById('forgotEmail'),
-    forgotError: document.getElementById('forgotError'),
-    forgotSubmitBtn: document.getElementById('forgotSubmitBtn'),
-    forgotBackBtn: document.getElementById('forgotBackBtn'),
-    resetOverlay: document.getElementById('resetOverlay'),
-    resetPassword: document.getElementById('resetPassword'),
-    resetPasswordConfirm: document.getElementById('resetPasswordConfirm'),
-    resetError: document.getElementById('resetError'),
-    resetSubmitBtn: document.getElementById('resetSubmitBtn'),
   };
 
   function rankClass(rank){
@@ -809,9 +669,7 @@ const els = {
   document.getElementById('paywallUpgradeBtn').addEventListener('click', confirmUpgrade);
   document.getElementById('paywallLogoutBtn').addEventListener('click', logout);
   els.paywallCloseBtn.addEventListener('click', () => showPaywall(false));
-  if(!checkResetTokenInUrl()){
-    refreshAuthStatus().then(checkBillingReturn);
-  }
+  refreshAuthStatus().then(checkBillingReturn);
 
   // ==================== PWA「ホーム画面に追加」機能 ====================
   let deferredInstallPrompt = null;
@@ -855,14 +713,6 @@ const els = {
       // 登録に失敗してもゲーム自体には影響しない
     });
   }
-
-  document.getElementById('tabSignup').addEventListener('click', () => setAuthMode(true));
-  document.getElementById('tabLogin').addEventListener('click', () => setAuthMode(false));
-
-  els.forgotPasswordLink.addEventListener('click', openForgotPassword);
-  els.forgotBackBtn.addEventListener('click', closeForgotPassword);
-  els.forgotSubmitBtn.addEventListener('click', handleForgotSubmit);
-  els.resetSubmitBtn.addEventListener('click', handleResetSubmit);
 </script>
 </body>
 </html>

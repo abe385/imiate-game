@@ -183,31 +183,6 @@
     <div class="switchText" id="switchTextWrap" style="display:none;">
       <button class="linkBtn" id="authSwitchBtn">新規登録する</button>
     </div>
-    <div style="text-align:center; margin-top:10px; display:none;" id="forgotPasswordWrap">
-      <button class="linkBtn" id="forgotPasswordLink">パスワードを忘れた方はこちら</button>
-    </div>
-  </div>
-</div>
-
-<div class="modalOverlay" id="forgotOverlay">
-  <div class="modalBox">
-    <h2>🔑 パスワード再設定</h2>
-    <p>登録済みのメールアドレスを入力してください。再設定用のリンクをメールでお送りします。</p>
-    <div class="authError" id="forgotError"></div>
-    <input type="email" id="forgotEmail" placeholder="メールアドレス" autocomplete="email">
-    <button class="primaryBtn" id="forgotSubmitBtn">再設定メールを送る</button>
-    <button class="linkBtn" id="forgotBackBtn">ログイン画面に戻る</button>
-  </div>
-</div>
-
-<div class="modalOverlay" id="resetOverlay">
-  <div class="modalBox">
-    <h2>🔑 新しいパスワードを設定</h2>
-    <p>新しいパスワード(8文字以上)を入力してください。</p>
-    <div class="authError" id="resetError"></div>
-    <input type="password" id="resetPassword" placeholder="新しいパスワード(8文字以上)" autocomplete="new-password">
-    <input type="password" id="resetPasswordConfirm" placeholder="新しいパスワード(確認用)" autocomplete="new-password">
-    <button class="primaryBtn" id="resetSubmitBtn">パスワードを更新する</button>
   </div>
 </div>
 
@@ -483,7 +458,6 @@
     els.authPasswordConfirm.value = '';
     document.getElementById('tabSignup').classList.toggle('activeTab', isSignupMode);
     document.getElementById('tabLogin').classList.toggle('activeTab', !isSignupMode);
-    els.forgotPasswordWrap.style.display = isSignupMode ? 'none' : 'block';
   }
   function toggleAuthMode(){
     setAuthMode(!isSignupMode);
@@ -497,74 +471,6 @@
     updateAccountBar();
     showPaywall(false);
     showLoginModal();
-  }
-
-  let resetTokenValue = null;
-
-  function openForgotPassword(){
-    els.loginOverlay.style.display = 'none';
-    els.forgotOverlay.style.display = 'flex';
-    els.forgotError.textContent = '';
-    els.forgotError.style.color = '';
-    els.forgotEmail.value = els.authEmail.value || '';
-  }
-
-  function closeForgotPassword(){
-    els.forgotOverlay.style.display = 'none';
-    els.loginOverlay.style.display = 'flex';
-  }
-
-  async function handleForgotSubmit(){
-    const email = els.forgotEmail.value.trim();
-    els.forgotError.style.color = '';
-    els.forgotError.textContent = '';
-    if(!email){
-      els.forgotError.textContent = 'メールアドレスを入力してください';
-      return;
-    }
-    try{
-      await apiFetch('/auth/request-reset', { method: 'POST', body: JSON.stringify({ email }) });
-      els.forgotError.style.color = 'var(--good)';
-      els.forgotError.textContent = '再設定用のメールを送信しました(登録されている場合)。メールをご確認ください。';
-    } catch(e){
-      els.forgotError.textContent = e.message;
-    }
-  }
-
-  function checkResetTokenInUrl(){
-    const params = new URLSearchParams(window.location.search);
-    const token = params.get('reset_token');
-    if(token){
-      resetTokenValue = token;
-      els.loginOverlay.style.display = 'none';
-      els.resetOverlay.style.display = 'flex';
-      return true;
-    }
-    return false;
-  }
-
-  async function handleResetSubmit(){
-    const password = els.resetPassword.value;
-    const confirmPw = els.resetPasswordConfirm.value;
-    els.resetError.textContent = '';
-    if(password.length < 8){
-      els.resetError.textContent = 'パスワードは8文字以上にしてください';
-      return;
-    }
-    if(password !== confirmPw){
-      els.resetError.textContent = 'パスワードが一致しません';
-      return;
-    }
-    try{
-      await apiFetch('/auth/reset-password', { method: 'POST', body: JSON.stringify({ token: resetTokenValue, password }) });
-      els.resetOverlay.style.display = 'none';
-      history.replaceState(null, '', window.location.pathname);
-      setAuthMode(false);
-      showLoginModal();
-      alert('パスワードを再設定しました。新しいパスワードでログインしてください。');
-    } catch(e){
-      els.resetError.textContent = e.message;
-    }
   }
 
   function openUpgradeFlow(){
@@ -643,18 +549,6 @@ const els = {
     installBtn: document.getElementById('installBtn'),
     installIosOverlay: document.getElementById('installIosOverlay'),
     installIosCloseBtn: document.getElementById('installIosCloseBtn'),
-    forgotPasswordWrap: document.getElementById('forgotPasswordWrap'),
-    forgotPasswordLink: document.getElementById('forgotPasswordLink'),
-    forgotOverlay: document.getElementById('forgotOverlay'),
-    forgotEmail: document.getElementById('forgotEmail'),
-    forgotError: document.getElementById('forgotError'),
-    forgotSubmitBtn: document.getElementById('forgotSubmitBtn'),
-    forgotBackBtn: document.getElementById('forgotBackBtn'),
-    resetOverlay: document.getElementById('resetOverlay'),
-    resetPassword: document.getElementById('resetPassword'),
-    resetPasswordConfirm: document.getElementById('resetPasswordConfirm'),
-    resetError: document.getElementById('resetError'),
-    resetSubmitBtn: document.getElementById('resetSubmitBtn'),
   };
 
   function rankClass(rank){
@@ -809,9 +703,7 @@ const els = {
   document.getElementById('paywallUpgradeBtn').addEventListener('click', confirmUpgrade);
   document.getElementById('paywallLogoutBtn').addEventListener('click', logout);
   els.paywallCloseBtn.addEventListener('click', () => showPaywall(false));
-  if(!checkResetTokenInUrl()){
-    refreshAuthStatus().then(checkBillingReturn);
-  }
+  refreshAuthStatus().then(checkBillingReturn);
 
   // ==================== PWA「ホーム画面に追加」機能 ====================
   let deferredInstallPrompt = null;
@@ -858,11 +750,6 @@ const els = {
 
   document.getElementById('tabSignup').addEventListener('click', () => setAuthMode(true));
   document.getElementById('tabLogin').addEventListener('click', () => setAuthMode(false));
-
-  els.forgotPasswordLink.addEventListener('click', openForgotPassword);
-  els.forgotBackBtn.addEventListener('click', closeForgotPassword);
-  els.forgotSubmitBtn.addEventListener('click', handleForgotSubmit);
-  els.resetSubmitBtn.addEventListener('click', handleResetSubmit);
 </script>
 </body>
 </html>
