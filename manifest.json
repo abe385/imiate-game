@@ -1,18 +1,37 @@
 {
-  "name": "英語で遊ぼう！",
-  "short_name": "英語で遊ぼう！",
-  "description": "英語のWord Chainで語彙力を鍛える学習ゲーム",
-  "start_url": "./english-word-chain.html",
+  "name": "脳トレ(連想ゲーム)",
+  "short_name": "脳トレ",
+  "description": "意味の近さのヒントを頼りに、今日のお題の単語を当てるゲーム",
+  "start_url": "./imiate.html",
+  "scope": "./",
   "display": "standalone",
-  "background_color": "#12141c",
-  "theme_color": "#12141c",
+  "background_color": "#1a1d2e",
+  "theme_color": "#1a1d2e",
   "orientation": "portrait",
   "icons": [
     {
-      "src": "icon.svg",
-      "sizes": "any",
-      "type": "image/svg+xml",
-      "purpose": "any maskable"
+      "src": "icon-192.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "icon-512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "icon-192.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "maskable"
+    },
+    {
+      "src": "icon-512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "maskable"
     }
   ]
 }
