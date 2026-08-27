@@ -169,9 +169,6 @@
       すでにアカウントをお持ちですか?
       <button class="linkBtn" id="authSwitchBtn">ログインする</button>
     </div>
-    <div style="text-align:center; margin-top:10px; display:none;" id="forgotPasswordWrap">
-      <button class="linkBtn" id="forgotPasswordLink">パスワードを忘れた方はこちら</button>
-    </div>
   </div>
 </div>
 
