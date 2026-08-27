@@ -127,8 +127,7 @@
     <p>メールアドレスと、お好きなパスワード(8文字以上)を決めるだけで始められます。メール認証は不要です。<br>登録すると7日間無料でお試しいただけます。</p>
     <div class="authError" id="authError"></div>
     <input type="email" id="authEmail" placeholder="メールアドレス" autocomplete="email">
-    <input type="password" id="authPassword" placeholder="パスワード(8文字以上)" autocomplete="new-password">
-    <input type="password" id="authPasswordConfirm" placeholder="パスワード(確認用・もう一度入力)" autocomplete="new-password">
+    <input type="password" id="authPassword" placeholder="パスワード(8文字以上)" autocomplete="current-password">
     <button class="primaryBtn" id="authSubmitBtn">無料で始める</button>
     <div class="switchText">
       すでにアカウントをお持ちですか?
@@ -361,16 +360,6 @@
     const email = els.authEmail.value.trim();
     const password = els.authPassword.value;
     els.authError.textContent = '';
-    if(isSignupMode){
-      if(password.length < 8){
-        els.authError.textContent = 'パスワードは8文字以上にしてください';
-        return;
-      }
-      if(password !== els.authPasswordConfirm.value){
-        els.authError.textContent = 'パスワードが一致しません。もう一度ご確認ください。';
-        return;
-      }
-    }
     try{
       const path = isSignupMode ? '/auth/signup' : '/auth/login';
       const data = await apiFetch(path, { method: 'POST', body: JSON.stringify({ email, password }) });
@@ -388,8 +377,6 @@
     els.authSubmitBtn.textContent = isSignupMode ? '無料で始める' : 'ログイン';
     els.authSwitchBtn.textContent = isSignupMode ? 'ログインする' : '新規登録する';
     els.authError.textContent = '';
-    els.authPasswordConfirm.style.display = isSignupMode ? 'block' : 'none';
-    els.authPasswordConfirm.value = '';
   }
 
   async function logout(){
@@ -447,7 +434,6 @@ const els = {
     paywallOverlay: document.getElementById('paywallOverlay'),
     authEmail: document.getElementById('authEmail'),
     authPassword: document.getElementById('authPassword'),
-    authPasswordConfirm: document.getElementById('authPasswordConfirm'),
     authError: document.getElementById('authError'),
     authSubmitBtn: document.getElementById('authSubmitBtn'),
     authSwitchBtn: document.getElementById('authSwitchBtn'),
