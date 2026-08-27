@@ -428,14 +428,6 @@ const els = {
     hint: document.getElementById('hintBtn'),
     hintText: document.getElementById('hintText'),
     round2: document.getElementById('round2Btn'),
-    accountBar: document.getElementById('accountBar'),
-    loginOverlay: document.getElementById('loginOverlay'),
-    paywallOverlay: document.getElementById('paywallOverlay'),
-    authEmail: document.getElementById('authEmail'),
-    authPassword: document.getElementById('authPassword'),
-    authError: document.getElementById('authError'),
-    authSubmitBtn: document.getElementById('authSubmitBtn'),
-    authSwitchBtn: document.getElementById('authSwitchBtn'),
   };
 
   function rankClass(rank){
@@ -532,7 +524,6 @@ const els = {
   }
 
   function submitGuess(){
-    if(authStatus && authStatus.status === 'expired'){ showPaywall(true); return; }
     if(won) return;
     const word = els.input.value.trim();
     els.error.textContent = '';
@@ -553,7 +544,6 @@ const els = {
   }
 
   function giveUpNow(){
-    if(authStatus && authStatus.status === 'expired'){ showPaywall(true); return; }
     if(won) return;
     if(!confirm('答えを見ると、今日はもう回答できなくなります。よろしいですか？')) return;
     // Reveal the answer as if it had just been guessed, so it appears at the
@@ -583,13 +573,6 @@ const els = {
   els.input.focus();
 
   render();
-
-  els.authSubmitBtn.addEventListener('click', handleAuthSubmit);
-  els.authSwitchBtn.addEventListener('click', toggleAuthMode);
-  els.authPassword.addEventListener('keydown', e => { if(e.key === 'Enter') handleAuthSubmit(); });
-  document.getElementById('paywallUpgradeBtn').addEventListener('click', startCheckout);
-  document.getElementById('paywallLogoutBtn').addEventListener('click', logout);
-  refreshAuthStatus().then(checkBillingReturn);
 </script>
 </body>
 </html>
