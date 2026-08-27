@@ -124,7 +124,7 @@
 <div class="modalOverlay" id="loginOverlay">
   <div class="modalBox">
     <h2 id="authTitle">はじめまして</h2>
-    <p>メールアドレスと、お好きなパスワード(8文字以上)を決めるだけで始められます。メール認証は不要です。<br>登録すると7日間無料でお試しいただけます。</p>
+    <p>メールアドレスを登録すると、7日間無料でお試しいただけます。</p>
     <div class="authError" id="authError"></div>
     <input type="email" id="authEmail" placeholder="メールアドレス" autocomplete="email">
     <input type="password" id="authPassword" placeholder="パスワード(8文字以上)" autocomplete="current-password">
