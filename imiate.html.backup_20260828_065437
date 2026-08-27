@@ -400,17 +400,11 @@
     return Math.max(0, Math.ceil((unixSec - Math.floor(Date.now() / 1000)) / 86400));
   }
 
-  function formatDate(unixSec){
-    if(!unixSec) return '';
-    const d = new Date(unixSec * 1000);
-    return `${d.getMonth() + 1}月${d.getDate()}日`;
-  }
-
   function updateAccountBar(){
     if(!authStatus){ els.accountBar.innerHTML = ''; return; }
     let html = '';
     if(authStatus.status === 'trial'){
-      html = `<div>🎁 無料期間中(無料期限終了日:${formatDate(authStatus.trialEndsAt)})</div>
+      html = `<div>🎁 無料期間中(残り${daysLeft(authStatus.trialEndsAt)}日)</div>
         <button id="upgradeBtn" class="upgradeBigBtn">🚀 アップグレードする</button>`;
     } else if(authStatus.status === 'active'){
       html = `<div>✅ 有料会員</div>
