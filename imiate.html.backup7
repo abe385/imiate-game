@@ -144,22 +144,10 @@
 
 <div class="paywallOverlay" id="paywallOverlay">
   <div class="paywallBox">
-    <h2 id="paywallTitle">🔒 無料期間が終了しました</h2>
-    <p id="paywallText">脳トレ(連想ゲーム)を引き続きお楽しみいただくには、サブスクリプションへのご登録が必要です。</p>
+    <h2>🔒 無料期間が終了しました</h2>
+    <p>脳トレ(連想ゲーム)を引き続きお楽しみいただくには、サブスクリプションへのご登録が必要です。</p>
     <div class="priceTag">月額110円</div>
-    <div style="font-size:13px; margin-bottom:14px; line-height:1.9; color:#5a5647;">
-      <a href="terms.html" target="_blank" style="color:var(--accent-dark);">利用規約</a>
-      ・<a href="privacy.html" target="_blank" style="color:var(--accent-dark);">プライバシーポリシー</a>
-      ・<a href="tokushoho.html" target="_blank" style="color:var(--accent-dark);">特定商取引法に基づく表記</a>
-      をご確認ください。
-    </div>
-    <label style="display:flex; align-items:flex-start; gap:8px; font-size:14px; text-align:left; margin-bottom:16px; cursor:pointer;">
-      <input type="checkbox" id="ageConfirmCheckbox" style="margin-top:3px; width:19px; height:19px; flex-shrink:0;">
-      <span>私は18歳以上であり、上記の利用規約・プライバシーポリシー・特定商取引法に基づく表記の内容に同意します。</span>
-    </label>
-    <div class="authError" id="paywallError" style="min-height:18px; margin-bottom:6px;"></div>
     <button class="primaryBtn" id="paywallUpgradeBtn">アップグレードする</button>
-    <button class="linkBtn" id="paywallCloseBtn" style="display:none; margin-bottom:8px;">あとで登録する</button>
     <button class="linkBtn" id="paywallLogoutBtn">別のアカウントでログイン</button>
   </div>
 </div>
@@ -343,7 +331,7 @@
     }
     label += ` ・ <button id="logoutBtn" class="linkBtn">ログアウト</button>`;
     els.accountBar.innerHTML = label;
-    const up = document.getElementById('upgradeBtn'); if(up) up.addEventListener('click', openUpgradeFlow);
+    const up = document.getElementById('upgradeBtn'); if(up) up.addEventListener('click', startCheckout);
     const pt = document.getElementById('portalBtn'); if(pt) pt.addEventListener('click', openPortal);
     const lo = document.getElementById('logoutBtn'); if(lo) lo.addEventListener('click', logout);
   }
@@ -419,27 +407,6 @@
     showLoginModal();
   }
 
-  function openUpgradeFlow(){
-    const expired = authStatus && authStatus.status === 'expired';
-    document.getElementById('paywallTitle').textContent = expired ? '🔒 無料期間が終了しました' : '💳 アップグレード';
-    document.getElementById('paywallText').textContent = expired
-      ? '脳トレ(連想ゲーム)を引き続きお楽しみいただくには、サブスクリプションへのご登録が必要です。'
-      : '無料期間中でも、今すぐアップグレードいただけます。';
-    els.ageConfirmCheckbox.checked = false;
-    els.paywallError.textContent = '';
-    els.paywallCloseBtn.style.display = expired ? 'none' : 'inline-block';
-    showPaywall(true);
-  }
-
-  function confirmUpgrade(){
-    if(!els.ageConfirmCheckbox.checked){
-      els.paywallError.textContent = '同意いただける場合のみお進みいただけます。';
-      return;
-    }
-    els.paywallError.textContent = '';
-    startCheckout();
-  }
-
   async function startCheckout(){
     try{
       const data = await apiFetch('/billing/create-checkout-session', { method: 'POST' });
@@ -489,9 +456,6 @@ const els = {
     authError: document.getElementById('authError'),
     authSubmitBtn: document.getElementById('authSubmitBtn'),
     authSwitchBtn: document.getElementById('authSwitchBtn'),
-    ageConfirmCheckbox: document.getElementById('ageConfirmCheckbox'),
-    paywallError: document.getElementById('paywallError'),
-    paywallCloseBtn: document.getElementById('paywallCloseBtn'),
   };
 
   function rankClass(rank){
@@ -643,9 +607,8 @@ const els = {
   els.authSubmitBtn.addEventListener('click', handleAuthSubmit);
   els.authSwitchBtn.addEventListener('click', toggleAuthMode);
   els.authPassword.addEventListener('keydown', e => { if(e.key === 'Enter') handleAuthSubmit(); });
-  document.getElementById('paywallUpgradeBtn').addEventListener('click', confirmUpgrade);
+  document.getElementById('paywallUpgradeBtn').addEventListener('click', startCheckout);
   document.getElementById('paywallLogoutBtn').addEventListener('click', logout);
-  els.paywallCloseBtn.addEventListener('click', () => showPaywall(false));
   refreshAuthStatus().then(checkBillingReturn);
 </script>
 </body>
