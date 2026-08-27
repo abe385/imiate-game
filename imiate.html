@@ -429,6 +429,8 @@
   els.input.addEventListener('keydown', e => { if(e.key === 'Enter') submitGuess(); });
 
   function startGameUI(){
+    authEls.overlay.style.display = 'none';
+    paywallEls.overlay.style.display = 'none';
     document.getElementById('gameCard').style.display = 'block';
     els.input.focus();
     render();
